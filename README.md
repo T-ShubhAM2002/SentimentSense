@@ -1,11 +1,20 @@
-# Moodify - Mental Health Text Classification
+# SentimentSense - Mental Health Text Classification
 
-Moodify is a deep learning project that classifies text into different mental health categories using a Bidirectional LSTM (BiLSTM) model with multi-head attention mechanism.
+SentimentSense is a deep learning project that classifies text into different mental health categories using a Bidirectional LSTM (BiLSTM) model with multi-head attention mechanism. The model is designed to analyze text input and classify it into various mental health categories, providing insights into the emotional and psychological state expressed in the text.
+
+## Features
+
+- Text classification into multiple mental health categories
+- Real-time prediction through a web interface
+- Advanced deep learning architecture with BiLSTM and attention
+- Robust data preprocessing and augmentation
+- Class imbalance handling
+- Comprehensive performance metrics
 
 ## Project Structure
 
 ```
-Moodify/
+SentimentSense/
 ├── flask/                  # Flask web application
 │   ├── app.py             # Main Flask application
 │   ├── run.py             # Flask runner
@@ -24,8 +33,8 @@ Moodify/
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/Moodify.git
-cd Moodify
+git clone https://github.com/yourusername/SentimentSense.git
+cd SentimentSense
 ```
 
 2. **Create a virtual environment**
