@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodify</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body{
+            /* background-image: url('{{ url_for("static", filename="images/bg.jpg") }}'); */
+            /* height: 500px; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            background-size: cover;  */
+        }
+        #bg-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+        }
+
+        .manrope-.logo,.tag,.input {
+            font-family: "Manrope", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 500;
+            font-style: normal;
+        }
+        .manrope-.heading {
+            font-family: "Manrope", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 800;
+            font-style: normal;
+        }
+        @keyframes floatLeft {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+        /* Animation for the right section */
+        @keyframes floatRight {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(10px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+        
+        /* Apply animation to the left section */
+        .left.floating {
+            animation: floatLeft 3s ease-in-out infinite;
+        }
+        /* Apply animation to the right section */
+        .right.floating {
+            animation: floatRight 3s ease-in-out infinite;
+        }
+        .input{
+            background: none;
+        }
+        .btn{
+            float: right;
+            margin-right: -10px;
+        }
+        
+        .right h1{
+            font-size: 70px;
+            padding: 5px;
+            text-shadow: 5px;
+            font-weight: bold;
+        }
+        .right p{
+            font-size: 15px;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+        }
+        @media (max-width: 768px) {
+            body {
+                height: 100vh; /* Set the height to full viewport height */
+            }
+            #bg-video {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                z-index: -1;
+            }
+            .sec{
+            flex-direction: column;
+        }   
+        .right h1{
+            font-size: 50px;
+            padding: 5px;
+            text-shadow: 5px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        .submit{
+            margin-top: 50px;
+        }
+        }
+
+    </style>
+</head>
+
+<body>
+    <video autoplay muted loop id="bg-video">
+        <source src="{{ url_for('static', filename='video/bg2.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      
+    <nav class="p-4 mt-5">
+        <div class="container mx-auto flex justify-between items-center">
+            <div>
+                <a href="#" class="logo text-gray-200 text-2xl font-bold">Moodify</a>
+            </div>
+        </div>
+    </nav>
+    <div class="flex justify-center items-center mt-7">
+        <section class="sec flex justify-around items-center md:ml-20">
+            <div class="left floating">
+                <img src="{{ url_for('static', filename='images/left.png') }}" alt="">
+            </div>
+            <div class="right floating text-center md:text-left">
+                <h1 class="heading text-4xl md:text-7xl text-white text-shadow-lg">Mental Health Detector</h1>
+                <p class="tag text-sm md:text-base text-white">Your Emotional Wellness Companion: Detecting stress, fostering resilience.</p>
+            </div>
+        </section>
+    </div>
+
+    <div class="submit mx-auto px-4 md:w-3/4 lg:w-11/12 border-solid border-2 border-white rounded-md p-1 mt-3 shadow-lg flex items-center">
+        <form action="/" method="post" class="flex-grow flex items-center">
+            <input type="text" name="input_data" class="input flex-grow p-1.5 text-gray-200 border-none outline-none">
+            <button type="submit" class="btn bg-white px-3 py-1.5 rounded-md text-white ml-2"><i class="fas fa-chevron-right text-black"></i></button>
+        </form>
+    </div>
+    <div>
+    
+    </div>
+    <div id="predictionModal" class="fixed inset-0 flex items-center justify-center hidden bg-black bg-opacity-50">
+        <div class="bg-white p-8 rounded-md">
+            <div id="predictionContent">
+                <p id="predictionResult" class="text-lg font-semibold"></p>
+                <p id="quote" class="text-sm mt-4"></p>
+                <img id="stressImage" src="" alt="Stressed" width="200px" class="hidden m-auto">
+                <img id="notStressImage" src="" alt="Not Stressed" width="200px" class="hidden m-auto">
+                <button id="closeModalBtn" class="mt-4 bg-green-700 px-4 py-2 text-white rounded-md">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Get the prediction result element, modal elements, and images
+        const predictionResultElement = document.getElementById('predictionResult');
+        const quoteElement = document.getElementById('quote');
+        const stressImage = document.getElementById('stressImage');
+        const notStressImage = document.getElementById('notStressImage');
+        const predictionModal = document.getElementById('predictionModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+    
+        // Check if prediction result exists
+        {% if prediction %}
+            // Set prediction result text
+            predictionResultElement.textContent = "The prediction result is: {{ prediction }}";
+            // Set quote text
+            quoteElement.textContent = "{{ quote }}";
+    
+            // Show the modal
+            predictionModal.classList.remove('hidden');
+    
+            // Show the corresponding image based on the prediction result
+            {% if prediction == "Stressed" %}
+                stressImage.src = "/static/images/sad.jpeg";
+                stressImage.classList.remove('hidden');
+            {% elif prediction == "Not Stressed" %}
+                notStressImage.src = "/static/images/happy.jpg";
+                notStressImage.classList.remove('hidden');
+            {% endif %}
+        {% endif %}
+    
+        // Add event listener to close the modal
+        closeModalBtn.addEventListener('click', function() {
+            predictionModal.classList.add('hidden');
+        });
+    </script>
+    
+    
+</body>
+
+</html>
