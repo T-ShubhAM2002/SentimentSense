@@ -4,6 +4,7 @@ import torch.nn as nn
 import numpy as np
 import re
 import pickle
+import os
 
 # Define the BiLSTM model class (same as in train_multi.py)
 class BiLSTM(nn.Module):
@@ -63,31 +64,56 @@ class BiLSTM(nn.Module):
 # Load the model and vocabulary
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+# Define label mapping directly
+label_mapping = {
+    0: "Negative (sad, depressed, exhausted)",
+    1: "Positive (happy, excited, optimistic)",
+    2: "Affectionate/Caring",
+    3: "Angry/Frustrated",
+    4: "Anxious/Fearful",
+    5: "Surprised/Shocked"
+}
+print("Using label mapping:", label_mapping)
+
+# Get the directory where app.py is located
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
 # Load vocabulary first to get vocab_size
-with open('flask/vocab.pkl', 'rb') as f:
-    vocab_data = pickle.load(f)
-    word2idx = vocab_data['word2idx']
-    vocab_size = len(word2idx)
+try:
+    # Load vocabulary first to get vocab_size
+    vocab_path = os.path.join(current_dir, 'vocab.pkl')
+    print(f"Loading vocabulary from: {vocab_path}")
+    with open(vocab_path, 'rb') as f:
+        vocab_list = pickle.load(f)
+        word2idx = {word: idx for idx, word in enumerate(vocab_list)}
+        vocab_size = 4224  # Use the same vocab size as the trained model
+        print(f"Using vocabulary size: {vocab_size}")
 
-# Initialize the model with the same architecture as training
-model = BiLSTM(
-    vocab_size=vocab_size,
-    embedding_dim=300,
-    hidden_dim=256,
-    num_classes=6,
-    num_layers=3,
-    dropout=0.4
-).to(device)
+    # Initialize the model with the same architecture as training
+    model = BiLSTM(
+        vocab_size=vocab_size,
+        embedding_dim=300,
+        hidden_dim=256,
+        num_classes=6,
+        num_layers=3,
+        dropout=0.4
+    ).to(device)
 
-# Load the trained model weights
-state_dict = torch.load('flask/best_model.pth', map_location=device)
-model.load_state_dict(state_dict)
-model.eval()  # Set to evaluation mode
+    # Load the trained model weights
+    model_path = os.path.join(current_dir, 'best_model.pth')
+    print(f"Loading model from: {model_path}")
+    state_dict = torch.load(model_path, map_location=device)
+    model.load_state_dict(state_dict)
+    model.eval()  # Set to evaluation mode
 
-# Print model architecture for verification
-print("\nModel Architecture:")
-print(model)
-print("\nModel loaded successfully!")
+    # Print model architecture for verification
+    print("\nModel Architecture:")
+    print(model)
+    print("\nModel loaded successfully!")
+
+except Exception as e:
+    print(f"Error during model loading: {str(e)}")
+    raise
 
 def simple_tokenize(text):
     text = text.lower()
@@ -112,12 +138,18 @@ def home():
                 words = simple_tokenize(input_data)
                 print("Tokenized words:", words)
                 
-                indices = [word2idx.get(word, word2idx['<UNK>']) for word in words]
+                # Handle unknown words more gracefully
+                indices = []
+                for word in words:
+                    if word in word2idx:
+                        indices.append(word2idx[word])
+                    else:
+                        indices.append(0)  # Use 0 for unknown words
                 print("Word indices (first 10):", indices[:10])
                 
                 # Pad or truncate to max_length=150
                 if len(indices) < 150:
-                    indices = indices + [word2idx['<PAD>']] * (150 - len(indices))
+                    indices = indices + [0] * (150 - len(indices))  # Use 0 for padding
                 else:
                     indices = indices[:150]
                 
@@ -138,32 +170,29 @@ def home():
                     prediction = torch.argmax(output, dim=1).item()
                     print(f"Predicted class: {prediction}")
                 
-                # Map prediction to emotion
-                emotions = {
-                    0: "Negative (sad, depressed, exhausted)",
-                    1: "Positive (happy, excited, optimistic)",
-                    2: "Affectionate/Caring",
-                    3: "Angry/Frustrated",
-                    4: "Anxious/Fearful",
-                    5: "Surprised/Shocked"
-                }
-                pred_result = emotions[prediction]
+                # Map prediction to emotion using direct mapping
+                pred_result = label_mapping[prediction]
                 print("Final prediction:", pred_result)
                 
                 # Set quote based on prediction result
                 quotes = {
-                    0: "Every day may not be good, but there's something good in every day.",
-                    1: "Happiness is not something ready-made. It comes from your own actions.",
-                    2: "The best and most beautiful things in the world cannot be seen or even touched - they must be felt with the heart.",
-                    3: "Take a deep breath. It's just a bad day, not a bad life.",
-                    4: "You are braver than you believe, stronger than you seem, and smarter than you think.",
-                    5: "Life is full of surprises and miracles."
+                    'Negative': "Every day may not be good, but there's something good in every day.",
+                    'Positive': "Happiness is not something ready-made. It comes from your own actions.",
+                    'Affectionate': "The best and most beautiful things in the world cannot be seen or even touched - they must be felt with the heart.",
+                    'Angry': "Take a deep breath. It's just a bad day, not a bad life.",
+                    'Anxious': "You are braver than you believe, stronger than you seem, and smarter than you think.",
+                    'Surprised': "Life is full of surprises and miracles."
                 }
-                quote = quotes[prediction]
+                # Get the first word of the emotion as the key
+                emotion_key = pred_result.split()[0]
+                quote = quotes.get(emotion_key, "Every moment is a fresh beginning.")
                 
             except Exception as e:
-                print(f"Prediction error: {e}")
-                pred_result = "Prediction Error"
+                print(f"Prediction error: {str(e)}")
+                print(f"Error type: {type(e).__name__}")
+                import traceback
+                print(f"Traceback: {traceback.format_exc()}")
+                pred_result = f"Prediction Error: {str(e)}"
 
     return render_template('index.html', prediction=pred_result, quote=quote)
 

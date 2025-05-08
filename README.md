@@ -1,217 +1,105 @@
-# SentimentSense - Mental Health Text Classification
+# SentimentSense
 
-SentimentSense is a deep learning project that classifies text into different mental health categories using a Bidirectional LSTM (BiLSTM) model with multi-head attention mechanism. The model is designed to analyze text input and classify it into various mental health categories, providing insights into the emotional and psychological state expressed in the text.
+SentimentSense is an advanced emotion analysis tool that uses deep learning to analyze text and predict emotional content. Built with PyTorch and Flask, it provides real-time sentiment analysis with a beautiful web interface.
 
 ## Features
 
-- Text classification into multiple mental health categories
-- Real-time prediction through a web interface
-- Advanced deep learning architecture with BiLSTM and attention
-- Robust data preprocessing and augmentation
-- Class imbalance handling
-- Comprehensive performance metrics
+- **Multi-Emotion Detection**: Identifies 6 different emotional states:
+  - Negative (sad, depressed, exhausted)
+  - Positive (happy, excited, optimistic)
+  - Affectionate/Caring
+  - Angry/Frustrated
+  - Anxious/Fearful
+  - Surprised/Shocked
 
-## Project Structure
+- **Advanced AI Model**: 
+  - BiLSTM (Bidirectional Long Short-Term Memory) architecture
+  - Multi-head attention mechanism
+  - Deep neural network with multiple layers
+  - Pre-trained on extensive emotional text data
 
-```
-SentimentSense/
-├── flask/                  # Flask web application
-│   ├── app.py             # Main Flask application
-│   ├── run.py             # Flask runner
-│   ├── requirements.txt   # Flask dependencies
-│   ├── templates/         # HTML templates
-│   ├── static/           # Static files (CSS, JS)
-│   ├── best_model.pth    # Trained model weights
-│   ├── vocab.pkl         # Vocabulary mapping
-│   └── label_mapping.pkl # Label mapping
-├── train_multi.py        # Training script
-├── test.csv             # Dataset
-└── requirements.txt     # Project dependencies
-```
+- **User-Friendly Interface**:
+  - Clean and modern web design
+  - Real-time predictions
+  - Inspirational quotes based on detected emotions
+  - Responsive layout
 
-## Setup and Installation
+## Technical Details
 
-1. **Clone the repository**
+- **Model Architecture**:
+  - Embedding Layer (300 dimensions)
+  - 3 BiLSTM layers with attention
+  - 8 attention heads
+  - Multi-layer classifier
+  - Dropout for regularization
+
+- **Technologies Used**:
+  - Python 3.10
+  - PyTorch for deep learning
+  - Flask for web framework
+  - HTML/CSS for frontend
+  - JavaScript for interactivity
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10
+- pip (Python package installer)
+
+### Installation
+
+1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/SentimentSense.git
 cd SentimentSense
 ```
 
-2. **Create a virtual environment**
+2. Install the required packages:
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r flask/requirements.txt
 ```
 
-3. **Install dependencies**
-```bash
-pip install -r requirements.txt
-```
+### Running the Application
 
-## Training the Model
-
-1. **Prepare the dataset**
-   - The dataset should be in CSV format with 'text' and 'label' columns
-   - Place your dataset as `test.csv` in the root directory
-
-2. **Run the training script**
-```bash
-python train_multi.py
-```
-
-The training script will:
-- Load and preprocess the data
-- Build vocabulary from the training set
-- Train the BiLSTM model
-- Save the model and necessary files to the `flask` directory
-
-## Model Architecture
-
-### BiLSTM with Multi-head Attention
-
-The model uses a sophisticated architecture combining:
-1. **Embedding Layer**
-   - Vocabulary size: 15,000
-   - Embedding dimension: 300
-   - Dropout: 0.4
-
-2. **BiLSTM Layers**
-   - 3 bidirectional LSTM layers
-   - Hidden dimension: 256
-   - Residual connections between layers
-   - Dropout: 0.4
-
-3. **Multi-head Attention**
-   - 8 attention heads
-   - Each head with LayerNorm and ReLU activation
-   - Concatenated attention outputs
-
-4. **Classification Head**
-   - Deep neural network with residual connections
-   - LayerNorm for regularization
-   - Dropout for preventing overfitting
-
-### Training Process
-
-1. **Data Preprocessing**
-   - Text tokenization
-   - Vocabulary building
-   - Sequence padding/truncation
-   - Data augmentation:
-     - Random word dropout
-     - Random word swap
-
-2. **Training Parameters**
-   - Batch size: 8
-   - Learning rate: 5e-5
-   - Weight decay: 0.01
-   - Maximum epochs: 200
-   - Early stopping patience: 15
-   - Gradient clipping: 1.0
-
-3. **Class Imbalance Handling**
-   - Class weights: 2.0x for minority classes
-   - Stratified sampling
-   - Data augmentation for minority classes
-
-## Running the Flask Application
-
-1. **Start the Flask server**
+1. Navigate to the flask directory:
 ```bash
 cd flask
-python run.py
 ```
 
-2. **Access the web interface**
-   - Open your browser and go to `http://localhost:5000`
-   - Enter text to classify
-   - View the prediction results
-
-## Model Performance
-
-### Overall Metrics
-- Overall accuracy: ~51%
-- Macro average F1-score: 0.45
-- Weighted average F1-score: 0.51
-
-### Class-wise Performance
-```
-              precision    recall  f1-score   support
-           0       0.62      0.62      0.62       116
-           1       0.63      0.46      0.53       139
-           2       0.35      0.22      0.27        32
-           3       0.35      0.58      0.44        55
-           4       0.46      0.49      0.47        45
-           5       0.30      0.54      0.39        13
+2. Run the Flask application:
+```bash
+python app.py
 ```
 
-### Training Progress
-- Best validation accuracy: 56.25% (achieved at epoch 66)
-- Training accuracy reached: 77.88%
-- Training duration: 68 epochs before early stopping
+3. Open your web browser and go to:
+```
+http://localhost:5000
+```
 
-### Class Distribution
-- Class 0: 116 samples (29%)
-- Class 1: 139 samples (34.75%)
-- Class 2: 32 samples (8%)
-- Class 3: 55 samples (13.75%)
-- Class 4: 45 samples (11.25%)
-- Class 5: 13 samples (3.25%)
+## Usage
 
-### Performance Analysis
-1. **Strong Points**
-   - High precision (0.62-0.63) for majority classes (0 and 1)
-   - Good recall (0.54-0.58) for classes 3 and 5
-   - Balanced performance across metrics
+1. Enter your text in the input field
+2. Click "Analyze" or press Enter
+3. View the predicted emotion and related inspirational quote
 
-2. **Areas for Improvement**
-   - Lower performance on minority classes (2 and 5)
-   - Class 2 shows lowest F1-score (0.27)
-   - Class 5 has low precision (0.30)
+## Project Structure
 
-3. **Balancing Techniques Used**
-   - Class weighting (2.0x for minority classes)
-   - Data augmentation
-   - Regularization techniques
-
-## Technical Details
-
-### Dependencies
-- PyTorch
-- Flask
-- pandas
-- numpy
-- scikit-learn
-- seaborn
-- matplotlib
-- tqdm
-
-### File Descriptions
-
-1. **train_multi.py**
-   - Main training script
-   - Implements model architecture
-   - Handles data preprocessing
-   - Manages training process
-
-2. **flask/app.py**
-   - Flask web application
-   - Loads trained model
-   - Handles text preprocessing
-   - Returns predictions
-
-3. **test.csv**
-   - Training dataset
-   - Contains text and labels
-   - Used for model training
+```
+SentimentSense/
+├── flask/
+│   ├── app.py              # Main Flask application
+│   ├── best_model.pth      # Trained model weights
+│   ├── vocab.pkl          # Vocabulary file
+│   ├── requirements.txt    # Python dependencies
+│   ├── static/            # Static files (CSS, JS, images)
+│   └── templates/         # HTML templates
+└── README.md
+```
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
@@ -219,6 +107,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- Thanks to all contributors
-- Inspired by mental health text classification research
-- Built with PyTorch and Flask
+- Thanks to all contributors who have helped shape this project
+- Inspired by the need for better emotional intelligence in text analysis
